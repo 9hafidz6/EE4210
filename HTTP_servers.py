@@ -3,6 +3,7 @@ import sys
 import socket
 from _thread import *
 import threading
+import webbrowser
 
 SERVER_ADDR = '127.0.0.1'
 UDP_SERVER_PORT = 1234
@@ -18,6 +19,11 @@ def handle_UDPclient(udp_socket,data, addr):
         message = (f"""<html>
                     <head></head>
                     <body><p>EE-4210: Continuous assessment</p></body>
+                    </html>""")
+    else:
+        message = (f"""<html>
+                    <head></head>
+                    <body><p>Invalid Command</p></body>
                     </html>""")
         # message = 'HTTP/1.1 200 OK\n\nHello world'
     udp_socket.sendto(message.encode(),addr)
@@ -41,6 +47,13 @@ def UDP_server():
 
 def handle_TCPclient(Client,addresss):
     print(f"handling TCP client...")
+    # request = Client.recv(1024).decode()
+    # print(request)
+
+    # # Send HTTP response
+    # response = 'HTTP/1.1 200 OK\n\nHello World'
+    # Client.sendall(response.encode())
+    # Client.close()
 
 #===============================================================================================================================
 
@@ -48,6 +61,16 @@ def TCP_server():
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp_socket.bind((SERVER_ADDR,TCP_SERVER_PORT))
     tcp_socket.listen(10)
+
+    #display web page at S1
+    f = open('tcp.html', 'w')
+    message = (f"""<html>
+                    <head></head>
+                    <body><p>this is a test</p></body>
+                    </html>""")
+    f.write(message)
+    f.close()
+    webbrowser.open('tcp.html')
 
     while True:
         Client, address = tcp_socket.accept()
