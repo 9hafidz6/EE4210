@@ -3,6 +3,7 @@
 # give to client 
 # client input thier own text
 import os
+import time
 import sys
 import socket
 from _thread import *
@@ -19,10 +20,22 @@ server_socket.bind((SERVER_ADDR,SERVER_PORT))
 
 #===============================================================================================================================
 
-def handle_client(data, addr):
-    print(f"{data.decode()} from {addr}")
+def handle_UDPclient(udp_socket,data, addr):
     #process the HTTP GET request here 
-    server_socket.sendto(message.encode(),addr)
+    COMMAND, OBJECT, HTTP_VERSION = str(data.decode()).split('|')
+    print(f'udp server received: {COMMAND} {OBJECT} {HTTP_VERSION} from {addr}')
+    if COMMAND == "GET" and OBJECT == "/udp.html" and HTTP_VERSION == "HTTP/1.1":
+        message = (f"""<html>
+                    <head></head>
+                    <body><p>EE-4210: Continuous assessment</p></body>
+                    </html>""")
+    else:
+        message = (f"""<html>
+                    <head></head>
+                    <body><p>Invalid Command</p></body>
+                    </html>""")
+        # message = 'HTTP/1.1 200 OK\n\nHello world'
+    udp_socket.sendto(message.encode(),addr)
     sys.exit()
 
 #===============================================================================================================================
@@ -30,7 +43,7 @@ def handle_client(data, addr):
 def server():
     while True:
         data, addr = server_socket.recvfrom(1024)
-        start_new_thread(handle_client,(data,addr))
+        start_new_thread(handle_UDPclient,(server_socket,data,addr))
         print(f"started new thread...")
 
     server_socket.close()   

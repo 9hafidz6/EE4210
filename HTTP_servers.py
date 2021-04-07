@@ -4,6 +4,8 @@ import socket
 from _thread import *
 import threading
 import webbrowser
+import time 
+import re
 
 SERVER_ADDR = '127.0.0.1'
 UDP_SERVER_PORT = 1234
@@ -45,15 +47,53 @@ def UDP_server():
 #==                                                                                                                           ==
 #===============================================================================================================================
 
-def handle_TCPclient(Client,addresss):
+def handle_TCPclient(Client,address):
     print(f"handling TCP client...")
-    # request = Client.recv(1024).decode()
-    # print(request)
+    request = Client.recv(1024).decode()
+    request = request.splitlines()
+    #print(f'{request[0]}')
+    #will get 3 headers from the first line 
+    COMMAND, OBJECT, HTTP_VERSION = str(request[0]).split(' ')
+    print(f"the 3 received are: {COMMAND} {OBJECT} {HTTP_VERSION}")
 
-    # # Send HTTP response
-    # response = 'HTTP/1.1 200 OK\n\nHello World'
-    # Client.sendall(response.encode())
-    # Client.close()
+    # Send HTTP response
+    if COMMAND == "GET" and HTTP_VERSION == "HTTP/1.1":
+        response = '''HTTP/1.1 200 OK\n\n
+                        <html>
+                        <form action="/127.0.0.1:4321" method="GET">
+                        <ul>
+                        <li>
+                            <label for="text">Input:</label>
+                            <input type="text" id="name" name="response">
+                        </li>
+                        <li class="button">
+                        <button type="submit">Send your input</button>
+                        </li>
+                        </ul>
+                        </form>
+                        </html>'''
+        Client.sendall(response.encode())
+        # Client.send(response.encode())
+    else:
+        print("something wrong here...")
+
+    request = Client.recv(1024).decode()
+    request = request.splitlines()
+    print(f'second response: {request[0]}')
+    # print(f"second response: {request}")
+    # request = "GET /my-handling-form-page?response=test HTTP/1.1"
+
+    found = re.search('response=(.+?) HTTP', request[0]).group(1)
+    print(f'{found}')
+    response = f'''HTTP/1.1 200 OK\n\n
+        <html>
+        <head></head>
+        <body><p>{found}</p></body>
+        </html>'''
+    Client.send(response.encode())
+    print("response sent")
+
+    Client.close()
 
 #===============================================================================================================================
 
@@ -61,22 +101,15 @@ def TCP_server():
     tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp_socket.bind((SERVER_ADDR,TCP_SERVER_PORT))
     tcp_socket.listen(10)
-
-    #display web page at S1
-    f = open('tcp.html', 'w')
-    message = (f"""<html>
-                    <head></head>
-                    <body><p>this is a test</p></body>
-                    </html>""")
-    f.write(message)
-    f.close()
-    webbrowser.open('tcp.html')
-
-    while True:
-        Client, address = tcp_socket.accept()
-        print(f"connected to {address[0]} and {address[1]}")
-        start_new_thread(handle_TCPclient,(Client,address))
-        print(f'new TCP connection')
+    
+    # while True:
+    #     Client, address = tcp_socket.accept()
+    #     print(f"connected to {address[0]} and {address[1]}")
+    #     start_new_thread(handle_TCPclient,(Client,address))
+    #     print(f'new TCP connection')
+    Client, address = tcp_socket.accept()
+    print(f"connected to {address[0]} and {address[1]}")
+    handle_TCPclient(Client, address)
     
     tcp_socket.close()
 
