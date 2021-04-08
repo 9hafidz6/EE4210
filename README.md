@@ -2,12 +2,12 @@
 EE4210 HTTP TCP and UDP servers assignment
 
 files:
-1)HTTP_servers.py
-    -program which runs both TCP and UDP servers concurrently
+1)HTTP_TCPserver.py
+    -program which runs TCP server
+2)HTTP_UDPserver.py 
+    -program which runs UDP server
 2)HTTP_UDPclient.py
-    -client to connect to UDP server
-3)HTTP_TCPclient.py
-    -client to connect to TCP server
+    -client to send data to UDP server 
 
 How to run:
 
@@ -15,6 +15,13 @@ How to run:
     -linux, Ubuntu 20.04
     -python  version 3.85
 2)running the program
-    -in terminal(in the directory of the files), execute: python3 HTTP_servers.py
+
+TCP server:
+    -in terminal(in the directory of the files), execute: python3 HTTP_TCPserver.py
+    -open browser, type in: 127.0.0.1:4321
+    -input text and press enter 
+UDP server:
+    -in terminal(in the directory of the files), execute: python3 HTTP_UDPserver.py
     -followed by: python3 HTTP_UDPclient.py
-    -followed by: python3 HTTP_TCPclient.py
+        OR
+    -send string data "GET /udp.html HTTP/1.1" to 127.0.0.1:1234
