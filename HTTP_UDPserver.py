@@ -37,6 +37,7 @@ def handle_UDPclient(udp_socket,data, addr):
         # message = 'HTTP/1.1 200 OK\n\nHello world'
     udp_socket.sendto(message.encode(),addr)
     sys.exit()
+    print("thread closed")
 
 #===============================================================================================================================
 

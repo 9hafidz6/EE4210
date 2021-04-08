@@ -24,4 +24,4 @@ UDP server:
     -in terminal(in the directory of the files), execute: python3 HTTP_UDPserver.py
     -followed by: python3 HTTP_UDPclient.py
         OR
-    -send string data "GET /udp.html HTTP/1.1" to 127.0.0.1:1234
+    -create a UDP socket and send string data "GET /udp.html HTTP/1.1" to 127.0.0.1:1234

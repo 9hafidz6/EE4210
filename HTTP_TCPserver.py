@@ -1,10 +1,11 @@
 import os
+import sys
 import socket
 import time
 import re
 
 SERVER_ADDR = '127.0.0.1'
-SERVER_PORT = 4322
+SERVER_PORT = 4320
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((SERVER_ADDR,SERVER_PORT))
 server_socket.listen(10)
@@ -15,13 +16,23 @@ def handle_client(server_socket, addr, i):
     COUNT=1
     while True:
         data=server_socket.recv(1024).decode()
+        # print(data)
         data = data.splitlines()
         # if not data:
         #     print(f"this is the received data from client {i}: {data}")
         #     print("closing socket")
         #     server_socket.close()
         #     break
-        if COUNT == 1:
+
+        #maybe need to combine the 2 if statment and check the GET command from 
+        try:
+            COMMAND, OBJECT, HTTP_VERSION = str(data[0]).split(' ')
+            print(f'the headers are for client {i}: {COMMAND} {OBJECT} {HTTP_VERSION}')
+        except Exception as e:
+            print(f'error in headers {i}: {e}')
+
+        if OBJECT=="/" or OBJECT=="/favicon.ico":
+        # if COUNT == 1:
             if not data[0]:
                 continue
             else:
@@ -41,27 +52,30 @@ def handle_client(server_socket, addr, i):
                                 </form>
                                 </html>'''
                 server_socket.sendall(response.encode())
-                print("first response sent")
+                print(f"first response sent {i}")
                 COUNT=COUNT+1
-        if COUNT > 1:
-            if not data[0]:
-                continue
-            else:
+        else:
+        # if COUNT > 1:
+            try:
                 found = re.search('response=(.+?) HTTP', data[0]).group(1)
                 found = found.replace("+", " ")
-
-                print(f'{found}')
-                response = f'''HTTP/1.1 200 OK\n\n
-                            <html>
-                            <head></head>
-                            <body><p>{found}</p></body>
-                            </html>'''
-                server_socket.send(response.encode())
-                print("response sent")
+            except Exception as e:
+                print(f'error: {e}')
                 server_socket.close()
-        else:
-            print("test")
-        time.sleep(0.01)
+                continue
+
+            # print(f'{found}')
+            response = f'''HTTP/1.1 200 OK\n\n
+                        <html>
+                        <head></head>
+                        <body><p>you typed: {found}</p></body>
+                        </html>'''
+            server_socket.send(response.encode())
+            print(f"second response sent {i}")
+            server_socket.close()
+
+        time.sleep(0.1)
+        sys.exit()
 
 def server():
     i=1
@@ -74,8 +88,7 @@ def server():
                 break
         else:
                 i+=1
-                print(f"number: {i}")
-        time.sleep(0.01)
+        time.sleep(0.1)
         
 
 server()
