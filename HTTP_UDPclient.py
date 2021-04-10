@@ -26,6 +26,7 @@ def main():
 
     data, addr = client_socket.recvfrom(1024)
     print(f'received from {addr}')
+    print(data.decode())
     f = open('udp.html', 'w')
     message = data.decode()
     # message = (f"""<html>
