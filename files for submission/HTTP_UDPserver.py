@@ -22,7 +22,7 @@ server_socket.bind((SERVER_ADDR,SERVER_PORT))
 
 def handle_UDPclient(udp_socket,data, addr):
     #process the HTTP GET request here 
-    COMMAND, OBJECT, HTTP_VERSION = str(data.decode()).split('|')
+    COMMAND, OBJECT, HTTP_VERSION = str(data.decode()).split(' ')
     print(f'udp server received: {COMMAND} {OBJECT} {HTTP_VERSION} from {addr}')
     if COMMAND == "GET" and OBJECT == "/udp.html" and HTTP_VERSION == "HTTP/1.1":
         message = (f"""<html>

@@ -21,7 +21,7 @@ def main():
     # HOST = ""
     # USER_AGENT = ""
 
-    messsage = f"{COMMAND}|{OBJECT}|{HTTP_VERSION}".encode()
+    messsage = f"{COMMAND} {OBJECT} {HTTP_VERSION}".encode()
     client_socket.sendto(messsage, (SERVER_IP, SERVER_PORT))
 
     data, addr = client_socket.recvfrom(1024)

@@ -42,4 +42,4 @@ UDP server:
 
 OR
 
-- create a UDP socket and send string data "GET /udp.html HTTP/1.1" to 127.0.0.1:1234
+- use netcat and send string data: echo -n "GET /udp.html HTTP/1.1" | nc -4u -q1 localhost 1234
